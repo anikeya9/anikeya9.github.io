@@ -1257,7 +1257,7 @@ footer {
   <p>Built with HTML, CSS & JavaScript · Hosted on GitHub Pages · &copy; 2026 Anikeya Aditya</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 const GITHUB_USERNAME = 'anikeya9';
 
 const LANG_COLORS = {
@@ -1271,6 +1271,8 @@ const LANG_COLORS = {
 
 async function loadProjects() {
   const grid = document.getElementById('projects-grid');
+  if (!grid) return;
+
   try {
     const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=12`);
     const repos = await res.json();
@@ -1309,7 +1311,22 @@ async function loadProjects() {
 }
 
 function initReveal() {
-  const els = document.querySelectorAll('.reveal');
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-    
+  const elements = document.querySelectorAll('.reveal');
+  
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  elements.forEach(el => observer.observe(el));
+}
+
+// CRITICAL: This fires the functions once the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  loadProjects();
+  initReveal();
+});
+</script>
